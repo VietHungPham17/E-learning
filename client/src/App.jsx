@@ -40,7 +40,7 @@ const App = () => {
   // Nếu chatClient đã connected (VD: HMR reload), khởi đầu là true luôn
   const [isConnected,  setIsConnected]  = useState(!!chatClient.userID);
   const [connectError, setConnectError] = useState("");
-  const [userRole,     setUserRole]     = useState(cookies.get("role") || "student");
+  const [userRole,     setUserRole]     = useState("student"); // không tin cookie, chờ server xác nhận
 
   const [createType,        setCreateType]        = useState("");
   const [isCreating,        setIsCreating]        = useState(false);
@@ -52,6 +52,21 @@ const App = () => {
   const [isCollapsed,       setIsCollapsed]       = useState(false);
 
   const authToken = cookies.get("token");
+
+  // Xác nhận role từ server mỗi khi kết nối xong — không bao giờ tin cookie
+  useEffect(() => {
+    if (!isConnected) return;
+    const accessToken = cookies.get("accessToken");
+    if (!accessToken) return;
+    axios.get(`${API_URL}/api/verify`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }).then(({ data }) => {
+      if (data?.data?.role) {
+        setUserRole(data.data.role);
+        cookies.set("role", data.data.role, { path: "/" });
+      }
+    }).catch(() => { /* giữ nguyên "student" nếu verify thất bại */ });
+  }, [isConnected]);
 
   useEffect(() => {
     // Đã connected hoặc chưa đăng nhập → không làm gì
@@ -102,23 +117,7 @@ const App = () => {
         connectPromise = null;
         if (cancelled) return;
 
-        setIsConnected(true);
-
-        // Đồng bộ role thật từ server (non-fatal).
-        // Dùng axios trực tiếp — KHÔNG dùng apiClient để tránh interceptor
-        // tự động reload trang khi accessToken/refreshToken đã hết hạn.
-        try {
-          const accessToken = cookies.get("accessToken");
-          if (accessToken) {
-            const { data } = await axios.get(`${API_URL}/api/verify`, {
-              headers: { Authorization: `Bearer ${accessToken}` },
-            });
-            if (!cancelled && data?.data?.role) {
-              setUserRole(data.data.role);
-              cookies.set("role", data.data.role);
-            }
-          }
-        } catch { /* fallback về role trong cookie */ }
+        setIsConnected(true); // useEffect verify role sẽ chạy tự động
       })
       .catch((err) => {
         clearTimeout(timeoutId);

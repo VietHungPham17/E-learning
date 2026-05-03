@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, useChatContext } from "stream-chat-react";
+import apiClient from "../services/apiClient";
 
 import { InviteIcon } from "../assets";
 
@@ -61,14 +62,9 @@ const UserList = ({ setSelectedUsers }) => {
       setLoading(true);
 
       try {
-        const response = await client.queryUsers(
-          { id: { $ne: client.userID } },
-          { name: 1 },
-          { limit: 100 }
-        );
-
-        if (response.users.length) {
-          setUsers(response.users);
+        const { data } = await apiClient.get("/api/stream-users");
+        if (data.users.length) {
+          setUsers(data.users);
         } else {
           setListEmpty(true);
         }

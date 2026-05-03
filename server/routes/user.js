@@ -74,6 +74,26 @@ router.put(
   resetUserPassword
 );
 
+// Tìm kiếm users qua admin credentials — tránh lỗi phân quyền Stream với non-admin users
+router.get("/stream-users", authenticateToken, async (req, res) => {
+  try {
+    const StreamChat = require("stream-chat").StreamChat;
+    const client = StreamChat.getInstance(
+      process.env.STREAM_API_KEY,
+      process.env.STREAM_API_SECRET
+    );
+    const q = (req.query.q || "").trim();
+    const filter = q
+      ? { id: { $ne: req.user.id }, $or: [{ name: { $autocomplete: q } }, { username: { $autocomplete: q } }] }
+      : { id: { $ne: req.user.id } };
+    const { users } = await client.queryUsers(filter, { name: 1 }, { limit: 100 });
+    return res.json({ users });
+  } catch (err) {
+    console.error("[STREAM USERS]", err);
+    return res.status(500).json({ message: "Lỗi tìm kiếm người dùng" });
+  }
+});
+
 // Channel AES key — POST to avoid URL-encoding issues with channel CIDs (e.g. "team:abc")
 router.post("/channel-key", authenticateToken, getChannelKey);
 

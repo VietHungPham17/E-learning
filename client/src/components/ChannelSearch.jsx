@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { getChannel, useChatContext } from "stream-chat-react";
 import { SearchIcon } from "../assets";
 import { ResultsDropdown } from "./";
+import apiClient from "../services/apiClient";
 
 const ChannelSearch = ({ setToggleContainer }) => {
   const { client, setActiveChannel } = useChatContext();
@@ -46,15 +47,13 @@ const ChannelSearch = ({ setToggleContainer }) => {
         name: { $autocomplete: text },
         members: { $in: [client.userID] },
       });
-      const userResponse = client.queryUsers({
-        id: { $ne: client.userID },
-        name: { $autocomplete: text },
-      });
+      const userResponse = apiClient.get(`/api/stream-users?q=${encodeURIComponent(text)}`);
 
-      const [channels, { users }] = await Promise.all([
+      const [channels, userRes] = await Promise.all([
         channelResponse,
         userResponse,
       ]);
+      const users = userRes.data.users;
 
       if (channels.length) setTeamChannels(channels);
       else setTeamChannels([]);
