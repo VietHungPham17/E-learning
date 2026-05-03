@@ -119,7 +119,7 @@ router.get(
   quizController.getResultDetail
 );
 
-router.get("/active", quizController.getActiveQuizzes);
+router.get("/active", authRequired, quizController.getActiveQuizzes);
 
 router.post(
   "/:quizId/begin",

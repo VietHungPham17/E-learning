@@ -7,6 +7,7 @@ const http      = require("http");
 const socketIo  = require("socket.io");
 const mongoose  = require("mongoose");
 const twilio    = require("twilio");
+const crypto    = require("crypto");
 
 const mongoSanitize = require("express-mongo-sanitize");
 const hpp           = require("hpp");
@@ -62,7 +63,24 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.post("/send-sms", (req, res) => {
+// Xác thực webhook từ Stream Chat bằng HMAC-SHA256
+function verifyStreamWebhook(req, res, next) {
+  const signature = req.headers["x-signature"];
+  const secret    = process.env.STREAM_API_SECRET;
+  if (!signature || !secret) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const hash = crypto
+    .createHmac("sha256", secret)
+    .update(JSON.stringify(req.body))
+    .digest("hex");
+  if (hash !== signature) {
+    return res.status(401).json({ message: "Invalid webhook signature" });
+  }
+  next();
+}
+
+app.post("/send-sms", verifyStreamWebhook, (req, res) => {
   const { message, user: sender, type, members } = req.body;
 
   if (type === "message.new") {

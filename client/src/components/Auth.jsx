@@ -48,8 +48,8 @@ const Auth = () => {
     const { accessToken, refreshToken, streamToken, userId, username,
             fullName, phoneNumber, avatarURL, role, twoFactorEnabled } = data;
 
-    const isProduction = process.env.NODE_ENV === "production";
-    const cookieOpts = { path: "/", sameSite: "strict", secure: isProduction };
+    const isSecure = window.location.protocol === "https:";
+    const cookieOpts = { path: "/", sameSite: "strict", secure: isSecure };
 
     cookies.set("token",         streamToken,          cookieOpts);
     cookies.set("accessToken",   accessToken,          cookieOpts);
