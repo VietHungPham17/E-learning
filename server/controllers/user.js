@@ -78,6 +78,10 @@ const updateUserRole = async (req, res) => {
       role: role,
     });
 
+    // Invalidate tất cả JWT cũ của user khi role thay đổi
+    const User = require("../models/User");
+    await User.updateOne({ streamUserId: userId }, { $inc: { jwtVersion: 1 } });
+
     console.log(`[UPDATE ROLE] Update result:`, updateResult);
 
     // Verify update bằng cách query lại user

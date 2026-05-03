@@ -57,14 +57,14 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 // ── Helpers ───────────────────────────────────────────────────────────
 
 const signAccessToken = (userId, jwtVersion) =>
-  jwt.sign({ userId, jwtVersion }, JWT_SECRET, { expiresIn: "15m" });
+  jwt.sign({ userId, jwtVersion }, JWT_SECRET, { expiresIn: "15m", algorithm: "HS256" });
 
 const signRefreshToken = (userId, jwtVersion) =>
-  jwt.sign({ userId, jwtVersion }, JWT_REFRESH_SECRET, { expiresIn: "7d" });
+  jwt.sign({ userId, jwtVersion }, JWT_REFRESH_SECRET, { expiresIn: "7d", algorithm: "HS256" });
 
 // tempToken dùng cho bước 2FA — hết hạn sau 5 phút
 const signTempToken = (userId) =>
-  jwt.sign({ userId, is2FATemp: true }, JWT_SECRET, { expiresIn: "5m" });
+  jwt.sign({ userId, is2FATemp: true }, JWT_SECRET, { expiresIn: "5m", algorithm: "HS256" });
 
 const verifyTempToken = (token) => {
   const payload = jwt.verify(token, JWT_SECRET);
@@ -72,10 +72,10 @@ const verifyTempToken = (token) => {
   return payload;
 };
 
-// Tạo 8 backup codes ngẫu nhiên dạng XXXX-XXXX
+// Tạo 8 backup codes ngẫu nhiên dạng XXXXXXXX-XXXXXXXX (4 bytes mỗi phần)
 const generateBackupCodes = () =>
   Array.from({ length: 8 }, () => {
-    const part = () => crypto.randomBytes(2).toString("hex").toUpperCase();
+    const part = () => crypto.randomBytes(4).toString("hex").toUpperCase();
     return `${part()}-${part()}`;
   });
 

@@ -1,4 +1,7 @@
 import io from "socket.io-client";
+import Cookies from "universal-cookie";
+
+const cookies = new Cookies();
 
 class WebRTCService {
   constructor() {
@@ -31,7 +34,9 @@ class WebRTCService {
   connect(serverUrl = "http://localhost:6036") {
     if (this.socket) return;
 
-    this.socket = io(serverUrl);
+    this.socket = io(serverUrl, {
+      auth: { token: cookies.get("accessToken") },
+    });
     this.setupSocketListeners();
   }
 

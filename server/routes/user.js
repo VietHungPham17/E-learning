@@ -32,9 +32,20 @@ const changePasswordLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-router.get("/me", authenticateToken, getCurrentUser);
+// Rate limit chung cho các API user: 60 lần / phút
+const userApiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  message: { message: "Quá nhiều yêu cầu. Vui lòng thử lại sau." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
-router.get("/users", authenticateToken, requireAdmin, getAllUsers);
+router.get("/me",      authenticateToken, userApiLimiter, getCurrentUser);
+router.get("/verify",  authenticateToken, userApiLimiter, verifyUserData);
+router.put("/profile", authenticateToken, userApiLimiter, updateProfile);
+
+router.get("/users", authenticateToken, requireAdmin, userApiLimiter, getAllUsers);
 
 router.put(
   "/users/:userId/role",
@@ -45,8 +56,6 @@ router.put(
 
 router.delete("/users/:userId", authenticateToken, requireAdmin, deleteUser);
 
-router.put("/profile", authenticateToken, updateProfile);
-
 router.put(
   "/change-password",
   authenticateToken,
@@ -54,8 +63,6 @@ router.put(
   validateNewPasswordMiddleware,
   changePassword
 );
-
-router.get("/verify", authenticateToken, verifyUserData);
 
 router.get("/users/:userId", authenticateToken, requireTeacherOrAdmin, getUserById);
 

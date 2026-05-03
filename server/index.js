@@ -52,7 +52,22 @@ const authToken         = process.env.TWILIO_AUTH_TOKEN;
 const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID;
 const twilioClient = twilio(accountSid, authToken); // fixed: was named 'client', referenced as 'twilioClient'
 
-app.use(helmet());
+app.use(helmet({
+  hsts: { maxAge: 31536000, includeSubDomains: true },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc:  ["'self'"],
+      connectSrc:  ["'self'", "https://*.stream-chat.com", "wss://*.stream-chat.com",
+                    "https://*.getstream.io",  "wss://*.getstream.io"],
+      scriptSrc:   ["'self'"],
+      styleSrc:    ["'self'", "'unsafe-inline'"],
+      imgSrc:      ["'self'", "data:", "https:"],
+      fontSrc:     ["'self'", "data:"],
+      frameSrc:    ["'none'"],
+      objectSrc:   ["'none'"],
+    },
+  },
+}));
 app.use(cors({ origin: ALLOWED_ORIGINS }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -111,6 +126,20 @@ app.use("/quiz", quizRoutes);
 
 const rooms = new Map();
 const users = new Map();
+
+// Xác thực JWT trước khi cho phép kết nối socket
+io.use((socket, next) => {
+  const token = socket.handshake.auth?.token;
+  if (!token) return next(new Error("Authentication required"));
+  try {
+    const jwt     = require("jsonwebtoken");
+    const payload = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ["HS256"] });
+    socket.userId = payload.userId;
+    next();
+  } catch {
+    next(new Error("Invalid token"));
+  }
+});
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);

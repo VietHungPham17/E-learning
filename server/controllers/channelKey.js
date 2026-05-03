@@ -1,10 +1,38 @@
-const crypto = require("crypto");
+const crypto     = require("crypto");
 const ChannelKey = require("../models/ChannelKey");
 const StreamChat = require("stream-chat").StreamChat;
 require("dotenv").config();
 
 const api_key    = process.env.STREAM_API_KEY;
 const api_secret = process.env.STREAM_API_SECRET;
+
+// Derive 32-byte encryption key từ JWT_SECRET bằng SHA-256
+function getMasterKey() {
+  return crypto.createHash("sha256").update(process.env.JWT_SECRET || "fallback").digest();
+}
+
+// Encrypt AES key bằng AES-256-GCM trước khi lưu DB
+function encryptChannelKey(plainBase64) {
+  const iv     = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", getMasterKey(), iv);
+  const enc    = Buffer.concat([cipher.update(plainBase64, "utf8"), cipher.final()]);
+  const tag    = cipher.getAuthTag();
+  return `${iv.toString("hex")}:${enc.toString("hex")}:${tag.toString("hex")}`;
+}
+
+// Decrypt — fallback sang plaintext nếu key cũ chưa được mã hóa
+function decryptChannelKey(stored) {
+  const parts = stored.split(":");
+  if (parts.length !== 3) return stored; // legacy plaintext
+  const [ivHex, encHex, tagHex] = parts;
+  try {
+    const decipher = crypto.createDecipheriv("aes-256-gcm", getMasterKey(), Buffer.from(ivHex, "hex"));
+    decipher.setAuthTag(Buffer.from(tagHex, "hex"));
+    return decipher.update(Buffer.from(encHex, "hex")).toString("utf8") + decipher.final("utf8");
+  } catch {
+    return stored; // fallback nếu decrypt thất bại
+  }
+}
 
 // POST /api/channel-key  (body: { channelId })
 // Returns the AES-256 key for a channel, creating one if it doesn't exist.
@@ -42,14 +70,15 @@ const getChannelKey = async (req, res) => {
       return res.status(403).json({ message: "Bạn không phải thành viên của channel này" });
     }
 
-    // Get or create AES key
+    // Get or create AES key (stored encrypted)
     let record = await ChannelKey.findOne({ channelId });
     if (!record) {
-      const key = crypto.randomBytes(32).toString("base64");
-      record = await ChannelKey.create({ channelId, key });
+      const plainKey = crypto.randomBytes(32).toString("base64");
+      record = await ChannelKey.create({ channelId, key: encryptChannelKey(plainKey) });
+      return res.status(200).json({ key: plainKey });
     }
 
-    return res.status(200).json({ key: record.key });
+    return res.status(200).json({ key: decryptChannelKey(record.key) });
   } catch (error) {
     console.error("[CHANNEL KEY ERROR]", error);
     return res.status(500).json({ message: "Lỗi lấy key channel" });

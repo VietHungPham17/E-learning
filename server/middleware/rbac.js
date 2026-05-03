@@ -35,7 +35,7 @@ const authenticate = async (req, res, next) => {
     // Xác minh chữ ký + hạn dùng
     let payload;
     try {
-      payload = jwt.verify(token, JWT_SECRET);
+      payload = jwt.verify(token, JWT_SECRET, { algorithms: ["HS256"] });
     } catch (err) {
       const msg =
         err.name === "TokenExpiredError"
