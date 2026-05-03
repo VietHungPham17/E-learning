@@ -1,0 +1,952 @@
+.admin-manager-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+  overflow: hidden;
+}
+
+.admin-manager-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-manager-header h2 {
+  margin: 0 0 15px 0;
+  font-size: 24px;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.tab-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.tab-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.tab-button.active {
+  background: white;
+  color: #667eea;
+}
+
+.admin-manager-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 30px;
+}
+
+.users-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-content-container {
+  display: flex;
+  gap: 20px;
+  height: calc(100vh - 200px);
+}
+
+.users-list-section {
+  flex: 1;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.users-list-section .users-table {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.user-details-section {
+  flex: 1;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.user-details-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 20px 15px 20px;
+  border-bottom: 2px solid #f0f0f0;
+  background: white;
+}
+
+.user-avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-avatar-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.user-basic-info h2 {
+  margin: 0 0 5px 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.user-email {
+  margin: 0 0 10px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.user-role-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.close-details-btn {
+  background: #f8f9fa;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.close-details-btn:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.message {
+  margin: 15px 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.details-tabs {
+  flex-shrink: 0;
+  display: flex;
+  gap: 5px;
+  padding: 0 20px;
+  border-bottom: 2px solid #f0f0f0;
+  background: white;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.3s;
+}
+
+.tab-btn:hover {
+  background: #f8f9fa;
+  color: #333;
+}
+
+.tab-btn.active {
+  background: #667eea;
+  color: white;
+}
+
+.tab-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 20px 20px 20px;
+}
+
+.info-tab {
+  padding: 20px 0 10px 0;
+}
+
+.form-actions {
+  margin-bottom: 25px;
+}
+
+.edit-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.edit-btn:hover {
+  background: #5a67d8;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.save-btn {
+  background: #2ecc71;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.save-btn:hover {
+  background: #27ae60;
+}
+
+.cancel-btn {
+  background: #95a5a6;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.cancel-btn:hover {
+  background: #7f8c8d;
+}
+
+.user-info-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.info-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.info-group span {
+  color: #666;
+  font-size: 14px;
+  padding: 8px 0;
+}
+
+.edit-input,
+.edit-select {
+  padding: 10px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.edit-input:focus,
+.edit-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.role-text {
+  font-weight: 600;
+}
+.role-text.role-admin {
+  color: #e74c3c;
+}
+.role-text.role-teacher {
+  color: #3498db;
+}
+.role-text.role-student {
+  color: #2ecc71;
+}
+
+.status-display.online {
+  color: #2ecc71;
+  font-weight: 600;
+}
+
+.status-display.offline {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.security-tab {
+  padding: 20px 0 10px 0;
+}
+
+.security-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+}
+
+.security-section h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.security-note {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.password-input {
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.password-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.reset-password-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.3s;
+  margin-top: 10px;
+}
+
+.reset-password-btn:hover:not(:disabled) {
+  background: #c0392b;
+}
+
+.reset-password-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.security-info {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.security-info h4 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.security-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.security-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.security-item:last-child {
+  border-bottom: none;
+}
+
+.security-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.security-value {
+  font-size: 14px;
+  color: #666;
+}
+
+.security-value.role-admin {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.security-value.role-teacher {
+  color: #3498db;
+  font-weight: 600;
+}
+
+.security-value.role-student {
+  color: #2ecc71;
+  font-weight: 600;
+}
+
+.security-value.status-active {
+  color: #2ecc71;
+  font-weight: 600;
+}
+
+.danger-zone {
+  background: #fff5f5;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 25px;
+  border: 2px solid #fee;
+}
+
+.danger-zone h4 {
+  margin: 0 0 10px 0;
+  color: #e74c3c;
+  font-size: 16px;
+}
+
+.danger-note {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.delete-user-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s;
+  width: 100%;
+}
+
+.delete-user-btn:hover {
+  background: #c0392b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.delete-user-btn:active {
+  transform: translateY(0);
+}
+
+.users-table tbody tr.selected {
+  background: #e8f0fe !important;
+  border-left: 4px solid #667eea;
+}
+
+.users-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.users-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.stat-card p {
+  margin: 0;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.users-table-container {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table thead {
+  background: #f8f9fa;
+}
+
+.users-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.users-table td {
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.users-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.users-table tbody tr.current-user {
+  background: #e3f2fd;
+}
+
+.role-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge-admin {
+  background: #e74c3c;
+  color: white;
+}
+
+.badge-teacher {
+  background: #3498db;
+  color: white;
+}
+
+.badge-student {
+  background: #2ecc71;
+  color: white;
+}
+
+.badge-default {
+  background: #95a5a6;
+  color: white;
+}
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.online {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.offline {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.role-select {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  background: white;
+  transition: border-color 0.3s;
+}
+
+.role-select:hover {
+  border-color: #667eea;
+}
+
+.role-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.delete-button {
+  padding: 6px 16px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.delete-button:hover {
+  background: #c0392b;
+}
+
+.current-user-label {
+  color: #667eea;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.channels-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.channels-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.channels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.channel-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.channel-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.channel-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.channel-card-header h4 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+  word-break: break-word;
+}
+
+.channel-type {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.channel-type.team {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.channel-type.messaging {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.channel-card-body {
+  margin-bottom: 15px;
+}
+
+.channel-card-body p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.channel-card-body strong {
+  color: #333;
+}
+
+.channel-card-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.delete-channel-button {
+  padding: 8px 16px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.delete-channel-button:hover {
+  background: #c0392b;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
+}
+
+.error-message {
+  color: #e74c3c;
+  background: #fadbd8;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 30px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .admin-manager-header {
+    padding: 15px 20px;
+  }
+
+  .admin-manager-header h2 {
+    font-size: 20px;
+  }
+
+  .admin-tabs {
+    flex-direction: column;
+  }
+
+  .tab-button {
+    width: 100%;
+  }
+
+  .admin-manager-content {
+    padding: 15px 20px;
+  }
+
+  .users-stats,
+  .channels-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .users-table {
+    font-size: 14px;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 10px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .role-select,
+  .delete-button {
+    width: 100%;
+  }
+
+  .channels-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-content-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .users-list-section,
+  .user-details-section {
+    flex: none;
+    max-height: 50vh;
+  }
+
+  .user-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .user-avatar-section {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .close-details-btn {
+    align-self: flex-end;
+  }
+
+  .details-tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .tab-btn {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .edit-actions {
+    flex-direction: column;
+  }
+
+  .edit-actions .save-btn,
+  .edit-actions .cancel-btn {
+    width: 100%;
+  }
+
+  .password-form .reset-password-btn {
+    width: 100%;
+  }
+
+  .security-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-details-panel {
+    padding: 15px;
+  }
+
+  .user-avatar-large {
+    width: 60px;
+    height: 60px;
+  }
+
+  .user-basic-info h2 {
+    font-size: 20px;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .users-table th:nth-child(n + 4),
+  .users-table td:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+.admin-manager-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-manager-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.admin-manager-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.admin-manager-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
