@@ -62,6 +62,17 @@ const signAccessToken = (userId, jwtVersion) =>
 const signRefreshToken = (userId, jwtVersion) =>
   jwt.sign({ userId, jwtVersion }, JWT_REFRESH_SECRET, { expiresIn: "7d", algorithm: "HS256" });
 
+// Set refreshToken as httpOnly cookie (JS cannot read it)
+function setRefreshCookie(res, token) {
+  res.cookie("refreshToken", token, {
+    httpOnly: true,
+    secure:   process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge:   7 * 24 * 60 * 60 * 1000,
+    path:     "/",
+  });
+}
+
 // tempToken dùng cho bước 2FA — hết hạn sau 5 phút
 const signTempToken = (userId) =>
   jwt.sign({ userId, is2FATemp: true }, JWT_SECRET, { expiresIn: "5m", algorithm: "HS256" });
@@ -118,7 +129,7 @@ const signup = async (req, res) => {
       catch { return res.status(400).json({ message: "avatarURL không hợp lệ" }); }
     }
 
-    // 6. Kiểm tra username trùng — kiểm tra cả MongoDB (nguồn sự thật)
+    // 6. Kiểm tra username trùng — kiểm tra cả MongoDB 
     const existingInDB = await User.findOne({ username: username.toLowerCase() });
     if (existingInDB) {
       return res.status(409).json({ message: "Username đã được sử dụng" });
@@ -155,9 +166,9 @@ const signup = async (req, res) => {
     const serverClient = connect(api_key, api_secret, app_id);
     const streamToken  = serverClient.createUserToken(userId);
 
+    setRefreshCookie(res, refreshToken);
     return res.status(201).json({
       accessToken,
-      refreshToken,
       streamToken,
       userId,
       username,
@@ -240,9 +251,9 @@ const login = async (req, res) => {
     const serverClient = connect(api_key, api_secret, app_id);
     const streamToken  = serverClient.createUserToken(dbUser.streamUserId);
 
+    setRefreshCookie(res, refreshToken);
     return res.status(200).json({
       accessToken,
-      refreshToken,
       streamToken,
       userId:          dbUser.streamUserId,
       username:        dbUser.username,
@@ -397,9 +408,9 @@ const validate2FA = async (req, res) => {
     const serverClient = connect(api_key, api_secret, app_id);
     const streamToken  = serverClient.createUserToken(dbUser.streamUserId);
 
+    setRefreshCookie(res, refreshToken);
     return res.status(200).json({
       accessToken,
-      refreshToken,
       streamToken,
       userId:           dbUser.streamUserId,
       username:         dbUser.username,
@@ -457,12 +468,12 @@ const disable2FA = async (req, res) => {
 // ── REFRESH TOKEN ─────────────────────────────────────────────────────
 const refreshToken = async (req, res) => {
   try {
-    const { refreshToken: token } = req.body;
-    if (!token) return res.status(400).json({ message: "refreshToken là bắt buộc" });
+    const token = req.cookies?.refreshToken;
+    if (!token) return res.status(401).json({ message: "Không có refresh token" });
 
     let payload;
     try {
-      payload = jwt.verify(token, JWT_REFRESH_SECRET);
+      payload = jwt.verify(token, JWT_REFRESH_SECRET, { algorithms: ["HS256"] });
     } catch {
       return res.status(401).json({ message: "Refresh token không hợp lệ hoặc đã hết hạn" });
     }
@@ -488,6 +499,12 @@ const logout = async (req, res) => {
       { streamUserId: req.user.id },
       { $inc: { jwtVersion: 1 } }
     );
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure:   process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path:     "/",
+    });
     return res.status(200).json({ message: "Đăng xuất thành công" });
   } catch (error) {
     console.error("[LOGOUT ERROR]", error);

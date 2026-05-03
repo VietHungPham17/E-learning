@@ -45,7 +45,7 @@ const Auth = () => {
 
   // Lưu thông tin đăng nhập vào cookies (không lưu hashedPassword)
   const saveSession = (data) => {
-    const { accessToken, refreshToken, streamToken, userId, username,
+    const { accessToken, streamToken, userId, username,
             fullName, phoneNumber, avatarURL, role, twoFactorEnabled } = data;
 
     const isSecure = window.location.protocol === "https:";
@@ -53,7 +53,7 @@ const Auth = () => {
 
     cookies.set("token",         streamToken,          cookieOpts);
     cookies.set("accessToken",   accessToken,          cookieOpts);
-    cookies.set("refreshToken",  refreshToken,         cookieOpts);
+    // refreshToken is now set by the server as httpOnly cookie — not stored here
     cookies.set("userId",        userId,               cookieOpts);
     cookies.set("username",      username,             cookieOpts);
     cookies.set("fullName",      fullName || "",       cookieOpts);

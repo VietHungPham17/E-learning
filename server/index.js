@@ -9,6 +9,7 @@ const mongoose  = require("mongoose");
 const twilio    = require("twilio");
 const crypto    = require("crypto");
 
+const cookieParser  = require("cookie-parser");
 const mongoSanitize = require("express-mongo-sanitize");
 const hpp           = require("hpp");
 
@@ -68,9 +69,10 @@ app.use(helmet({
     },
   },
 }));
-app.use(cors({ origin: ALLOWED_ORIGINS }));
+app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(mongoSanitize({ replaceWith: "_" })); // strips MongoDB operators ($, .) from all inputs
 app.use(hpp());                                // prevents HTTP parameter pollution via duplicate keys
 

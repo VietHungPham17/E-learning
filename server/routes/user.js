@@ -41,6 +41,15 @@ const userApiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Rate limit cho tìm kiếm user: 30 lần / phút
+const streamUsersLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  message: { message: "Quá nhiều yêu cầu tìm kiếm. Vui lòng thử lại sau." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 router.get("/me",      authenticateToken, userApiLimiter, getCurrentUser);
 router.get("/verify",  authenticateToken, userApiLimiter, verifyUserData);
 router.put("/profile", authenticateToken, userApiLimiter, updateProfile);
@@ -82,7 +91,7 @@ router.put(
 );
 
 // Tìm kiếm users qua admin credentials — tránh lỗi phân quyền Stream với non-admin users
-router.get("/stream-users", authenticateToken, async (req, res) => {
+router.get("/stream-users", authenticateToken, streamUsersLimiter, async (req, res) => {
   try {
     const StreamChat = require("stream-chat").StreamChat;
     const client = StreamChat.getInstance(

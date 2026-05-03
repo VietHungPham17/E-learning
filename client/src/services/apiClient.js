@@ -36,10 +36,12 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 && !original._retried) {
       original._retried = true;
       try {
-        const refreshToken = cookies.get("refreshToken");
-        if (!refreshToken) throw new Error("no refresh token");
-
-        const { data } = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
+        // refreshToken is an httpOnly cookie — browser sends it automatically
+        const { data } = await axios.post(
+          `${API_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
 
         cookies.set("accessToken", data.accessToken, {
           sameSite: "strict",
