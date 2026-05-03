@@ -123,16 +123,18 @@ const signup = async (req, res) => {
       return res.status(400).json({ message: "Số điện thoại không hợp lệ (10-11 chữ số)" });
     }
 
-    // 5. Validate avatarURL
+    // 5. Validate avatarURL — HTTPS only to prevent javascript:/data: XSS and SSRF
     if (avatarURL && avatarURL.trim()) {
-      try { new URL(avatarURL); }
-      catch { return res.status(400).json({ message: "avatarURL không hợp lệ" }); }
+      try {
+        const u = new URL(avatarURL);
+        if (u.protocol !== "https:") throw new Error();
+      } catch { return res.status(400).json({ message: "avatarURL phải là HTTPS" }); }
     }
 
     // 6. Kiểm tra username trùng — kiểm tra cả MongoDB 
     const existingInDB = await User.findOne({ username: username.toLowerCase() });
     if (existingInDB) {
-      return res.status(409).json({ message: "Username đã được sử dụng" });
+      return res.status(400).json({ message: "Username không khả dụng, vui lòng chọn username khác" });
     }
 
     // 7. Hash mật khẩu

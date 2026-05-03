@@ -155,8 +155,32 @@ export default function Profile({ activeProfileTab, onBack, isCollapsed }) {
       return false;
     }
 
-    if (passwordData.newPassword.length < 6) {
-      setMessage("Mật khẩu mới phải có ít nhất 6 ký tự");
+    if (passwordData.newPassword.length < 8) {
+      setMessage("Mật khẩu mới phải có ít nhất 8 ký tự");
+      setMessageType("error");
+      return false;
+    }
+
+    if (!/[A-Z]/.test(passwordData.newPassword)) {
+      setMessage("Mật khẩu mới phải có ít nhất 1 chữ hoa (A-Z)");
+      setMessageType("error");
+      return false;
+    }
+
+    if (!/[a-z]/.test(passwordData.newPassword)) {
+      setMessage("Mật khẩu mới phải có ít nhất 1 chữ thường (a-z)");
+      setMessageType("error");
+      return false;
+    }
+
+    if (!/[0-9]/.test(passwordData.newPassword)) {
+      setMessage("Mật khẩu mới phải có ít nhất 1 chữ số (0-9)");
+      setMessageType("error");
+      return false;
+    }
+
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(passwordData.newPassword)) {
+      setMessage("Mật khẩu mới phải có ít nhất 1 ký tự đặc biệt (!@#$%^&*...)");
       setMessageType("error");
       return false;
     }
@@ -416,7 +440,7 @@ export default function Profile({ activeProfileTab, onBack, isCollapsed }) {
             name="newPassword"
             value={passwordData.newPassword}
             onChange={handlePasswordChange}
-            placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)"
+            placeholder="Ít nhất 8 ký tự, chữ hoa, số, ký tự đặc biệt"
           />
         </div>
 

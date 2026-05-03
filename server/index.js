@@ -91,7 +91,13 @@ function verifyStreamWebhook(req, res, next) {
     .createHmac("sha256", secret)
     .update(JSON.stringify(req.body))
     .digest("hex");
-  if (hash !== signature) {
+  let sigValid = false;
+  try {
+    const hashBuf = Buffer.from(hash, "hex");
+    const sigBuf  = Buffer.from(signature, "hex");
+    sigValid = hashBuf.length === sigBuf.length && crypto.timingSafeEqual(hashBuf, sigBuf);
+  } catch {}
+  if (!sigValid) {
     return res.status(401).json({ message: "Invalid webhook signature" });
   }
   next();
@@ -147,6 +153,9 @@ io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
 
   socket.on("join-room", ({ roomId, userId, userName }) => {
+    if (userId !== socket.userId) {
+      return socket.emit("error", { message: "Unauthorized" });
+    }
     console.log(`User ${userName} (${userId}) joining room ${roomId}`);
 
     socket.join(roomId);

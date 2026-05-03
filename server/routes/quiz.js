@@ -1,5 +1,14 @@
 const express = require("express");
+const rateLimit = require("express-rate-limit");
 const router = express.Router();
+
+const submitLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  message: { message: "Quá nhiều lần nộp bài. Vui lòng thử lại sau." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 const {
   authRequired,
   requireRole,
@@ -134,6 +143,7 @@ router.post(
   "/:quizId/submit",
   authRequired,
   requireRole("student"),
+  submitLimiter,
   quizController.submitQuiz
 );
 

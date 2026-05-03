@@ -230,9 +230,10 @@ const updateProfile = async (req, res) => {
 
     if (avatarURL !== undefined && avatarURL && avatarURL.trim()) {
       try {
-        new URL(avatarURL);
-      } catch (error) {
-        return res.status(400).json({ message: "Invalid avatar URL format" });
+        const u = new URL(avatarURL);
+        if (u.protocol !== "https:") throw new Error();
+      } catch {
+        return res.status(400).json({ message: "avatarURL phải là HTTPS" });
       }
     }
 
@@ -379,15 +380,16 @@ const getUserById = async (req, res) => {
 
     const user = users[0];
 
+    const isAdmin = req.user.role === "admin";
     res.status(200).json({
       id: user.id,
       username: user.name,
       fullName: user.fullName,
       role: user.role || "student",
-      phoneNumber: user.phoneNumber,
+      ...(isAdmin && { phoneNumber: user.phoneNumber }),
       avatarURL: user.avatarURL,
       online: user.online,
-      hasPassword: !!user.hashedPassword,
+      ...(isAdmin && { hasPassword: !!user.hashedPassword }),
       created_at: user.created_at,
       updated_at: user.updated_at,
     });
@@ -443,9 +445,10 @@ const updateUserByAdmin = async (req, res) => {
 
     if (avatarURL && avatarURL.trim()) {
       try {
-        new URL(avatarURL);
-      } catch (error) {
-        return res.status(400).json({ message: "Invalid avatar URL format" });
+        const u = new URL(avatarURL);
+        if (u.protocol !== "https:") throw new Error();
+      } catch {
+        return res.status(400).json({ message: "avatarURL phải là HTTPS" });
       }
     }
 
