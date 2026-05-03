@@ -9,6 +9,7 @@ const QuizResults = ({ quiz, onBack }) => {
 
   useEffect(() => {
     fetchResults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchResults = async () => {

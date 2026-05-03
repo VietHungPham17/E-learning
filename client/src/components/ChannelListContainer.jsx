@@ -3,12 +3,8 @@ import { ChannelList, useChatContext } from "stream-chat-react";
 import Cookies from "universal-cookie";
 
 import { ChannelSearch, TeamChannelList, TeamChannelPreview } from "./";
-import AdminPanel from "./AdminPanel";
-import HospitalIcon from "../assets/hospital.png";
 import LogoutIcon from "../assets/logout.png";
-import ProfileIcon from "../assets/profile.jpg";
 import QuzzIcon from "../assets/quizz.jpg";
-import ArrowIcon from "../assets/Arrow.png";
 import { AdminIcon } from "../assets";
 
 const cookies = new Cookies();

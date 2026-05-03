@@ -8,9 +8,6 @@ const cookies = new Cookies();
 const API_URL = "http://localhost:6036";
 
 const QuizDashboard = ({ userRole, isCollapsed }) => {
-  const [activeTab, setActiveTab] = useState(
-    userRole === "student" ? "available" : "manage",
-  );
   const [quizzes, setQuizzes] = useState([]);
   const [activeQuizzes, setActiveQuizzes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -22,17 +19,6 @@ const QuizDashboard = ({ userRole, isCollapsed }) => {
     quizId: "",
     title: "",
     timeLimit: 0,
-  });
-
-  const [questions, setQuestions] = useState([]);
-  const [questionForm, setQuestionForm] = useState({
-    question: "",
-    answers: [
-      { text: "", correct: false },
-      { text: "", correct: false },
-      { text: "", correct: false },
-      { text: "", correct: false },
-    ],
   });
 
   const getAuthHeaders = () => {
@@ -87,6 +73,7 @@ const QuizDashboard = ({ userRole, isCollapsed }) => {
     } else {
       fetchQuizzes();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userRole]);
 
   const handleCreateQuiz = async (e) => {
@@ -426,6 +413,7 @@ function QuizEditor({ quiz, onBack, getAuthHeaders }) {
 
   useEffect(() => {
     fetchQuestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchQuestions = async () => {
@@ -647,6 +635,7 @@ const QuizTaker = ({ quiz, onBack, getAuthHeaders }) => {
 
   useEffect(() => {
     fetchQuestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -663,6 +652,7 @@ const QuizTaker = ({ quiz, onBack, getAuthHeaders }) => {
     }, 1000);
 
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft]);
 
   const fetchQuestions = async () => {
@@ -805,6 +795,7 @@ const QuizResults = ({ quiz, onBack, getAuthHeaders }) => {
 
   useEffect(() => {
     fetchResults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchResults = async () => {
@@ -894,6 +885,7 @@ const MyResults = ({ quiz, onBack, getAuthHeaders }) => {
 
   useEffect(() => {
     fetchMyResults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchMyResults = async () => {

@@ -34,6 +34,7 @@ const AdminChannelManager = ({ activeAdminTab, isCollapsed }) => {
   useEffect(() => {
     fetchUsers();
     fetchChannels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUsers = async () => {
@@ -180,30 +181,6 @@ const AdminChannelManager = ({ activeAdminTab, isCollapsed }) => {
     }
   };
 
-  const handleUpdateRole = async (targetUserId, role) => {
-    try {
-      const response = await apiClient.put(
-        `/api/users/${targetUserId}/role`,
-        { role },
-      );
-
-      await fetchUsers();
-
-      alert(
-        `✅ Role updated successfully!\nUser: ${
-          response.data.updatedUser?.fullName || response.data.updatedUser?.name
-        }\nNew Role: ${response.data.newRole}`,
-      );
-    } catch (err) {
-      console.error("[CLIENT] Error updating role:", err);
-      console.error("[CLIENT] Error response:", err.response?.data);
-      alert(
-        `❌ Failed to update role\n${
-          err.response?.data?.message || err.message
-        }`,
-      );
-    }
-  };
 
   const handleDeleteUser = async (targetUserId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) {

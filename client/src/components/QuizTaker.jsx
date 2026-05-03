@@ -19,6 +19,7 @@ const QuizTaker = ({ quiz, onBack }) => {
 
   useEffect(() => {
     beginQuiz();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Tab/window visibility change detection
@@ -52,6 +53,7 @@ const QuizTaker = ({ quiz, onBack }) => {
     }, 1000);
 
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft]);
 
   const beginQuiz = async () => {

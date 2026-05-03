@@ -30,6 +30,7 @@ const ChannelQuizView = ({ userRole }) => {
     if (channel) {
       fetchChannelQuizzes();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel]);
 
   const fetchChannelQuizzes = async () => {

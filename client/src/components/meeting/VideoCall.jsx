@@ -20,6 +20,7 @@ const VideoCall = ({ channel, onClose, currentUser }) => {
     return () => {
       cleanup();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const initializeCall = async () => {

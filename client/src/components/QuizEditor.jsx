@@ -19,6 +19,7 @@ const QuizEditor = ({ quiz, onBack, channel }) => {
 
   useEffect(() => {
     fetchQuestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchQuestions = async () => {

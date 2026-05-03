@@ -134,6 +134,7 @@ const App = () => {
       cancelled = true;
       clearTimeout(timeoutId);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // chạy 1 lần khi mount
 
   if (!authToken) return <Auth />;

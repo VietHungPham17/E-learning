@@ -339,4 +339,5 @@ class WebRTCService {
   }
 }
 
-export default new WebRTCService();
+const webrtcService = new WebRTCService();
+export default webrtcService;

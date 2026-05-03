@@ -144,6 +144,7 @@ const ChannelInner = ({ setIsEditing }) => {
       webrtcService.onIncomingCall = null;
       webrtcService.onCallEnded    = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel?.id, client?.user?.id]);
 
   // Encrypt text before sending to Stream

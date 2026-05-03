@@ -39,7 +39,6 @@ export default function Profile({ activeProfileTab, onBack, isCollapsed }) {
   useEffect(() => {
     const loadUserInfo = async () => {
       try {
-        const userId = cookies.get("userId");
         const username = cookies.get("username");
         const fullName = cookies.get("fullName");
         const phoneNumber = cookies.get("phoneNumber");
