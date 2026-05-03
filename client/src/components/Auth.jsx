@@ -88,7 +88,7 @@ const Auth = () => {
             avatarURL: form.avatarURL }
         : { username: form.username, password: form.password };
 
-      const { data } = await axios.post(`${API_URL}${endpoint}`, payload);
+      const { data } = await axios.post(`${API_URL}${endpoint}`, payload, { withCredentials: true });
 
       // Server yêu cầu xác thực 2FA
       if (data.require2FA) {
@@ -124,7 +124,7 @@ const Auth = () => {
       const { data } = await axios.post(`${API_URL}/auth/2fa/validate`, {
         tempToken,
         totpCode: totpCode.replace(/\s/g, ""),
-      });
+      }, { withCredentials: true });
 
       saveSession(data);
       window.location.reload();
