@@ -180,6 +180,16 @@ const ProfileMenuList = ({ activeProfileTab, setActiveProfileTab }) => {
           <div className="admin-menu-icon">🔒</div>
           <span>Thay đổi mật khẩu</span>
         </div>
+
+        <div
+          className={`admin-menu-item ${
+            activeProfileTab === "security" ? "active" : ""
+          }`}
+          onClick={() => setActiveProfileTab("security")}
+        >
+          <div className="admin-menu-icon">🛡️</div>
+          <span>Bảo mật (2FA)</span>
+        </div>
       </div>
     </div>
   );

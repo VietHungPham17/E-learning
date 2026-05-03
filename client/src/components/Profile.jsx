@@ -3,6 +3,7 @@ import "./Profile.css";
 import Cookies from "universal-cookie";
 import { StreamChat } from "stream-chat";
 import apiClient from "../services/apiClient";
+import TwoFactorSetup from "./TwoFactorSetup";
 
 const api_key = process.env.REACT_APP_STREAM_API_KEY;
 
@@ -451,7 +452,9 @@ export default function Profile({ activeProfileTab, onBack, isCollapsed }) {
         <h2>
           {activeProfileTab === "info"
             ? "Thông tin cá nhân"
-            : "Thay đổi mật khẩu"}
+            : activeProfileTab === "password"
+            ? "Thay đổi mật khẩu"
+            : "Bảo mật (2FA)"}
         </h2>
       </div>
 
@@ -494,7 +497,9 @@ export default function Profile({ activeProfileTab, onBack, isCollapsed }) {
 
         {activeProfileTab === "info"
           ? renderProfileInfo()
-          : renderPasswordChange()}
+          : activeProfileTab === "password"
+          ? renderPasswordChange()
+          : <TwoFactorSetup twoFactorEnabled={cookies.get("2faEnabled") === "true"} />}
 
         {message && <div className={`message ${messageType}`}>{message}</div>}
       </div>
