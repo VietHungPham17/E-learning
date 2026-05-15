@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { StreamChat } from "stream-chat";
 import { Chat } from "stream-chat-react";
 import Cookies from "universal-cookie";
 import axios from "axios";
+import notificationService from "./services/notificationService";
 
 import {
   ChannelListContainer,
@@ -50,6 +51,7 @@ const App = () => {
   const [activeProfileTab,  setActiveProfileTab]  = useState("info");
   const [isQuizMode,        setIsQuizMode]        = useState(false);
   const [isCollapsed,       setIsCollapsed]       = useState(false);
+  const [notifications,     setNotifications]     = useState([]);
 
   const authToken = cookies.get("token");
 
@@ -67,6 +69,75 @@ const App = () => {
       }
     }).catch(() => { /* giữ nguyên "student" nếu verify thất bại */ });
   }, [isConnected]);
+
+  // Notification callbacks (stable refs)
+  const addNotif = useCallback((notif) => {
+    setNotifications((prev) => {
+      if (prev.some((n) => n._id === notif._id)) return prev;
+      return [{ ...notif, read: notificationService.isRead(notif._id) }, ...prev].slice(0, 50);
+    });
+  }, []);
+
+  const handleMarkAllRead = useCallback(() => {
+    setNotifications((prev) => {
+      const updated = prev.map((n) => ({ ...n, read: true }));
+      notificationService.markAllRead(updated);
+      return updated;
+    });
+  }, []);
+
+  const handleMarkOneRead = useCallback((id) => {
+    notificationService.markRead(id);
+    setNotifications((prev) =>
+      prev.map((n) => (n._id === id ? { ...n, read: true } : n))
+    );
+  }, []);
+
+  // Connect notification service and fetch history when authenticated
+  useEffect(() => {
+    if (!isConnected) return;
+    const accessToken = cookies.get("accessToken");
+    if (!accessToken) return;
+
+    notificationService.connect();
+    notificationService.onNotification = addNotif;
+
+    // Query user's channels from Stream Chat then join quiz rooms + fetch history
+    chatClient.queryChannels(
+      { members: { $in: [chatClient.userID] } },
+      {},
+      { limit: 30 }
+    ).then((channels) => {
+      const channelIds = channels.map((c) => c.id).filter(Boolean);
+      notificationService.joinChannels(channelIds);
+      return notificationService.fetchNotifications(channelIds, accessToken);
+    }).then((fetched) => {
+      if (fetched.length > 0) setNotifications(fetched);
+    }).catch(() => {});
+
+    // Stream Chat: new message in a channel not currently active
+    const handleStreamMessage = (event) => {
+      if (!event?.message?.id) return;
+      const notif = {
+        _id: `msg-${event.message.id}`,
+        type: "message_new",
+        title: `Tin nhắn mới trong #${event.channel?.name || event.channel_id || "channel"}`,
+        body: event.message?.text?.slice(0, 100) || "(Tệp đính kèm)",
+        channelId: event.channel_id,
+        createdAt: new Date().toISOString(),
+        read: false,
+      };
+      addNotif(notif);
+    };
+
+    chatClient.on("notification.message_new", handleStreamMessage);
+
+    return () => {
+      chatClient.off("notification.message_new", handleStreamMessage);
+      notificationService.onNotification = null;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, addNotif]);
 
   useEffect(() => {
     // Đã connected hoặc chưa đăng nhập → không làm gì
@@ -194,6 +265,9 @@ const App = () => {
           setIsQuizMode={setIsQuizMode}
           isCollapsed={isCollapsed}
           setIsCollapsed={setIsCollapsed}
+          notifications={notifications}
+          onMarkAllRead={handleMarkAllRead}
+          onMarkOneRead={handleMarkOneRead}
         />
         {viewMode === "chat" ? (
           <ChannelContainer

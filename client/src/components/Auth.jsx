@@ -193,6 +193,11 @@ const Auth = () => {
           </div>
         </div>
         <div className="auth__form-container_image">
+          <div className="auth__brand-panel">
+            <div className="auth__brand-logo">💬</div>
+            <h1 className="auth__brand-name">Hệ thống học trực tuyến E-learning</h1>
+            <p className="auth__brand-tagline">Nền tảng học tập &amp; giao tiếp nhóm hiện đại</p>
+          </div>
           <img src={signinImage} alt="sign in" />
         </div>
       </div>
@@ -233,6 +238,23 @@ const Auth = () => {
                 onChange={handleChange} autoComplete={isSignup ? "new-password" : "current-password"} required />
             </div>
 
+            {isSignup && form.password.length > 0 && (
+              <div className="pw-rules">
+                {[
+                  { label: "Ít nhất 8 ký tự",               ok: form.password.length >= 8 },
+                  { label: "Ít nhất 1 chữ hoa (A–Z)",        ok: /[A-Z]/.test(form.password) },
+                  { label: "Ít nhất 1 chữ thường (a–z)",     ok: /[a-z]/.test(form.password) },
+                  { label: "Ít nhất 1 chữ số (0–9)",         ok: /[0-9]/.test(form.password) },
+                  { label: "Ít nhất 1 ký tự đặc biệt (!@#$%^&*...)", ok: /[!@#$%^&*()\-_=+\[\]{};':"\\|,.<>/?]/.test(form.password) },
+                ].map(({ label, ok }) => (
+                  <div key={label} className={`pw-rule ${ok ? "pw-rule--ok" : "pw-rule--fail"}`}>
+                    <span className="pw-rule__icon">{ok ? "✓" : "✗"}</span>
+                    {label}
+                  </div>
+                ))}
+              </div>
+            )}
+
             {isSignup && (
               <>
                 <div className="auth__form-container_fields-content_input">
@@ -272,6 +294,11 @@ const Auth = () => {
         </div>
       </div>
       <div className="auth__form-container_image">
+        <div className="auth__brand-panel">
+          <div className="auth__brand-logo">💬</div>
+          <h1 className="auth__brand-name">Hệ thống học trực tuyến E-learning</h1>
+          <p className="auth__brand-tagline">Nền tảng học tập &amp; giao tiếp nhóm hiện đại</p>
+        </div>
         <img src={signinImage} alt="sign in" />
       </div>
     </div>

@@ -3,7 +3,15 @@ const Quiz = require("../models/Quiz");
 const Question = require("../models/Question");
 const Result = require("../models/Result");
 const QuizSession = require("../models/QuizSession");
+const Notification = require("../models/Notification");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+async function emitQuizNotification(req, { channelId, channelName, type, title, body, quizId }) {
+  const notif = await Notification.create({ channelId, channelName, type, title, body, quizId });
+  if (req.io) {
+    req.io.to(`quiz-channel:${channelId}`).emit("quiz-notification", notif.toObject());
+  }
+}
 
 const isValidObjectId = (id) => Types.ObjectId.isValid(id) && String(new Types.ObjectId(id)) === id;
 
@@ -287,6 +295,15 @@ const saveGeneratedQuiz = async (req, res) => {
       });
     }
 
+    emitQuizNotification(req, {
+      channelId,
+      channelName: channelName || "Unknown Channel",
+      type: "quiz_created",
+      title: `Quiz AI mới: ${title}`,
+      body: `${req.user.fullName || req.user.name} đã tạo quiz AI "${title}"`,
+      quizId,
+    }).catch(() => {});
+
     res.status(201).json({
       message: "Quiz saved",
       quiz,
@@ -334,6 +351,15 @@ const createQuiz = async (req, res) => {
       channelName: channelName || "Unknown Channel",
       timeLimit: timeLimit || 0,
     });
+
+    emitQuizNotification(req, {
+      channelId,
+      channelName: channelName || "Unknown Channel",
+      type: "quiz_created",
+      title: `Quiz mới: ${title}`,
+      body: `${req.user.fullName || req.user.name} đã tạo quiz "${title}"`,
+      quizId,
+    }).catch(() => {});
 
     res.status(201).json(quiz);
   } catch (error) {
@@ -484,6 +510,15 @@ const startQuiz = async (req, res) => {
 
     quiz.isActive = true;
     await quiz.save();
+
+    emitQuizNotification(req, {
+      channelId: quiz.channelId,
+      channelName: quiz.channelName,
+      type: "quiz_started",
+      title: `Quiz đang diễn ra: ${quiz.title}`,
+      body: `Quiz "${quiz.title}" đã được mở — hãy vào làm ngay!`,
+      quizId: quiz.quizId,
+    }).catch(() => {});
 
     res.json(quiz);
   } catch (error) {

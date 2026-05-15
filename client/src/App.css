@@ -1,19 +1,41 @@
 :root {
-  /* Light Mode Variables */
-  --bg-app-bar: #ebebeb;
-  --bg-list-pane: #ffffff;
-  --bg-chat-header: #ffffff;
+  /* ── Brand ───────────────────────────────────── */
+  --color-primary:       #005fff;
+  --color-primary-dark:  #0047cc;
+  --color-primary-light: #e8f0fe;
+  --color-danger:        #e74c3c;
+  --color-success:       #22c55e;
+  --color-warning:       #f59e0b;
+
+  /* ── Typography ──────────────────────────────── */
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* ── Spacing / Radius ────────────────────────── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* ── Shadows ─────────────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10), 0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+
+  /* ── Channel list (light panel) ──────────────── */
+  --bg-app-bar:        #1e293b;   /* sidebar — dark navy */
+  --bg-list-pane:      #ffffff;
+  --bg-chat-header:    #ffffff;
   --bg-message-canvas: #ffffff;
-  --bg-input: #ffffff;
-  --bg-hover: #f5f5f5;
-  --bg-selected: #eff6fc;
-  --text-primary: #242424;
-  --text-secondary: #616161;
-  --border-color: #e0e0e0;
-  --primary-color: #6264a7;
-  --icon-inactive: #616161;
-  --icon-active: #6264a7;
-  --primary-color-alpha: #6264a71a;
+  --bg-input:          #ffffff;
+  --bg-hover:          #f5f7ff;
+  --bg-selected:       #eef4ff;
+  --text-primary:      #1e293b;
+  --text-secondary:    #64748b;
+  --border-color:      #e2e8f0;
+  --primary-color:     #005fff;
+  --icon-inactive:     rgba(255,255,255,.55);
+  --icon-active:       #ffffff;
+  --primary-color-alpha: rgba(0,95,255,.08);
 }
 
 /* Admin Menu Styles */
@@ -71,190 +93,336 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
+  font-family: var(--font-main);
 }
 
 #root {
   height: 100%;
 }
 
+/* ── Auth Page — Split Screen ─────────────────────────────────────────── */
 .auth__form-container {
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #141414;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23292929' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  flex-direction: row;
+  background: #fff;
 }
 
-.auth__form-container_fields {
-  flex: unset;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0;
-  background: transparent;
-  width: 100%;
-  max-width: 440px;
-}
-
+/* LEFT: brand panel */
 .auth__form-container_image {
+  display: flex;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #0f172a 0%, #1e3a5f 55%, #005fff 100%);
+  min-height: 100vh;
+}
+
+/* Decorative circles */
+.auth__form-container_image::before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: rgba(255,255,255,.04);
+  border-radius: 50%;
+  top: -120px;
+  right: -120px;
+}
+
+.auth__form-container_image::after {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: rgba(255,255,255,.05);
+  border-radius: 50%;
+  bottom: 40px;
+  left: -80px;
+}
+
+/* Hide the signup photo — using gradient instead */
+.auth__form-container_image > img {
   display: none;
 }
 
-.auth__form-container_fields-content {
+/* Brand content overlay */
+.auth__brand-panel {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  padding: 2rem;
-  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.5);
-  border-radius: 8px;
-  transition: 0.8s ease;
-  background: #292929;
-  border: 1px solid #3d3d3d;
+  justify-content: center;
+  padding: 64px 56px;
+  width: 100%;
 }
 
-.auth__form-container_fields-content p {
-  font-size: 24px;
-  font-family: Helvetica Neue, sans-serif;
-  color: #ffffff;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 1.5rem;
+.auth__brand-logo {
+  font-size: 52px;
+  margin-bottom: 20px;
+  line-height: 1;
+}
+
+.auth__brand-name {
+  font-family: var(--font-main);
+  font-size: 38px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 12px;
+  letter-spacing: -0.5px;
+}
+
+.auth__brand-tagline {
+  font-family: var(--font-main);
+  font-size: 17px;
+  color: rgba(255,255,255,.75);
+  margin: 0 0 48px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.auth__brand-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth__brand-features li {
+  font-family: var(--font-main);
+  font-size: 15px;
+  color: rgba(255,255,255,.85);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth__brand-features li::before {
+  content: "✓";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: rgba(255,255,255,.15);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* RIGHT: form panel */
+.auth__form-container_fields {
+  flex: 0 0 460px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 52px;
+  background: #fff;
+}
+
+.auth__form-container_fields-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.auth__form-container_fields-content > p:first-child {
+  font-family: var(--font-main);
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: left;
+  margin: 0 0 28px;
 }
 
 .auth__form-container_fields-content_input {
   display: flex;
   flex-direction: column;
   position: relative;
-  margin: 0.5rem 0rem;
+  margin: 0 0 14px;
 }
 
 .auth__form-container_fields-content_input label {
-  margin-bottom: 0.45rem;
-  color: #a6a6a6;
-  font-size: 14px;
-  font-family: Helvetica Neue, sans-serif;
-  letter-spacing: 0.7px;
-  line-height: 1.3;
+  margin-bottom: 6px;
+  color: #374151;
+  font-size: 13px;
+  font-family: var(--font-main);
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
 .auth__form-container_fields-content_input input {
-  padding: 0.55rem 0.4rem;
-  border: 1px solid #3d3d3d;
-  border-radius: 4px;
+  padding: 0 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: var(--radius-md);
   font-size: 14px;
+  font-family: var(--font-main);
   outline: none;
-  transition: all 150ms ease-in-out 0s;
+  transition: border-color .15s, box-shadow .15s;
   width: 100%;
-  background: #1b1a19;
-  color: #ffffff;
+  background: #f8fafc;
+  color: #1e293b;
   box-sizing: border-box;
-  height: 40px;
+  height: 44px;
 }
 
 .auth__form-container_fields-content_input input::placeholder {
-  color: #616161;
-  width: 100%;
-  font-weight: unset;
-  font-family: Helvetica Neue, sans-serif;
+  color: #94a3b8;
+  font-family: var(--font-main);
 }
 
 .auth__form-container_fields-content_input input:hover {
-  border-color: #7f85f5;
+  border-color: #94a3b8;
 }
 
-.auth__form-container_fields-content_input input:focus,
-.auth__form-container_fields-content_input input:active {
-  box-shadow: none;
-  border-color: #7f85f5;
+.auth__form-container_fields-content_input input:focus {
+  border-color: var(--color-primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0,95,255,.12);
 }
 
 .auth__form-container_fields-content_input-password {
   position: absolute;
-  right: 10px;
-  top: 38px;
+  right: 12px;
+  top: 36px;
   cursor: pointer;
-  color: #a6a6a6;
+  color: #94a3b8;
 }
 
 .auth__form-container_fields-content_button {
-  margin-top: 2rem;
+  margin-top: 24px;
   display: flex;
   justify-content: center;
 }
 
 .auth__form-container_fields-content_button button {
-  border-radius: 4px;
-  background: #7f85f5;
-  border: 1px solid #7f85f5;
-  color: #000000;
-  font-family: Helvetica Neue, sans-serif;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  border: none;
+  color: #fff;
+  font-family: var(--font-main);
   font-weight: 600;
-  padding: 0.7rem 1.2rem;
+  font-size: 15px;
   outline: none;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: background .2s, transform .15s, box-shadow .2s;
   width: 100%;
-  height: 44px;
+  height: 48px;
+  letter-spacing: 0.2px;
 }
 
-.auth__form-container_fields-content_button button:hover {
-  background: #6b71e3;
-  border-color: #6b71e3;
+.auth__form-container_fields-content_button button:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,95,255,.35);
+}
+
+.auth__form-container_fields-content_button button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .auth__form-container_fields-account {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 1.5rem;
+  margin-top: 20px;
 }
 
 .auth__form-container_fields-account p {
   font-size: 14px;
-  color: #a6a6a6;
-  font-weight: 500;
+  font-family: var(--font-main);
+  color: #64748b;
+  font-weight: 400;
   margin: 0;
-  margin-right: 5px;
 }
 
 .auth__form-container_fields-account span {
-  color: #7f85f5;
+  color: var(--color-primary);
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
+  margin-left: 4px;
 }
 
 .auth__form-container_fields-account span:hover {
   text-decoration: underline;
 }
 
+/* ── Password requirements checklist ────────────────────────────────── */
+.pw-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 8px 0 4px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md);
+}
+
+.pw-rule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-family: var(--font-main);
+  transition: color .2s;
+}
+
+.pw-rule--ok  { color: #16a34a; }
+.pw-rule--fail { color: #94a3b8; }
+
+.pw-rule__icon {
+  font-size: 11px;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pw-rule--ok  .pw-rule__icon { background: #dcfce7; color: #16a34a; }
+.pw-rule--fail .pw-rule__icon { background: #f1f5f9; color: #94a3b8; }
+
 @media screen and (max-width: 800px) {
   .auth__form-container {
-    flex-direction: column;
-  }
-
-  .auth__form-container_fields {
-    justify-content: center;
+    flex-direction: column-reverse;
   }
 
   .auth__form-container_image {
-    display: none;
+    min-height: 200px;
+    flex: 0 0 200px;
+  }
+
+  .auth__brand-panel {
+    padding: 32px;
+    justify-content: center;
+  }
+
+  .auth__brand-name { font-size: 26px; }
+  .auth__brand-tagline { display: none; }
+  .auth__brand-features { display: none; }
+
+  .auth__form-container_fields {
+    flex: unset;
+    padding: 32px 24px;
   }
 }
 
 @media screen and (max-width: 375px) {
   .auth__form-container_fields {
-    padding: 2rem 0.5rem;
-  }
-
-  .auth__form-container_fields-content_input input {
-    width: 95%;
-  }
-
-  .auth__form-container_fields-content_input-password {
-    right: 3%;
+    padding: 24px 16px;
   }
 }
 
@@ -464,11 +632,13 @@ body {
 .channel-list__sidebar {
   width: 72px;
   background: var(--bg-app-bar);
-  box-shadow: 1px 0px 0px rgba(0, 0, 0, 0.1);
-  /* border-top-left-radius: 16px; */
-  /* border-bottom-left-radius: 16px; */
+  box-shadow: 1px 0 0 rgba(0,0,0,.15);
   height: 100vh;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 4px;
 }
 
 .channel-list__sidebar__icon1 {
@@ -523,34 +693,38 @@ body {
 .channel-list__sidebar__icon2.selected::before {
   content: "";
   position: absolute;
-  left: -14px; /* Adjust based on margin */
+  left: -14px;
   top: 50%;
   transform: translateY(-50%);
   height: 24px;
   width: 3px;
-  background-color: var(--primary-color);
+  background-color: #60a5fa; /* light blue indicator on dark sidebar */
   border-radius: 0 4px 4px 0;
 }
 
+/* Images/SVGs on dark sidebar: make them white */
 .channel-list__sidebar__icon2 img,
-.channel-list__sidebar__icon2 svg,
-.channel-list__sidebar__icon2 span {
-  filter: grayscale(100%) brightness(0.4);
+.channel-list__sidebar__icon2 svg {
+  filter: brightness(0) invert(1);
+  opacity: 0.6;
 }
 
 .channel-list__sidebar__icon2.selected img,
-.channel-list__sidebar__icon2.selected svg,
-.channel-list__sidebar__icon2.selected span {
-  filter: none;
+.channel-list__sidebar__icon2.selected svg {
+  filter: brightness(0) invert(1);
+  opacity: 1;
 }
 
-/* Specific override for the chat icon span */
+/* Emoji spans — colour naturally, just dim when inactive */
 .channel-list__sidebar__icon2 span {
-  color: var(--icon-inactive) !important;
+  filter: none !important;
+  opacity: 0.6;
+  color: #fff !important;
 }
 
 .channel-list__sidebar__icon2.selected span {
-  color: var(--primary-color) !important;
+  opacity: 1;
+  color: #fff !important;
 }
 
 .channel-list__sidebar__icon3 {

@@ -13,9 +13,10 @@ const cookieParser  = require("cookie-parser");
 const mongoSanitize = require("express-mongo-sanitize");
 const hpp           = require("hpp");
 
-const authRoutes = require("./routes/auth.js");
-const userRoutes = require("./routes/user.js");
-const quizRoutes = require("./routes/quiz.js");
+const authRoutes         = require("./routes/auth.js");
+const userRoutes         = require("./routes/user.js");
+const quizRoutes         = require("./routes/quiz.js");
+const notificationRoutes = require("./routes/notification.js");
 
 const app    = express();
 const server = http.createServer(app);
@@ -76,6 +77,9 @@ app.use(cookieParser());
 app.use(mongoSanitize({ replaceWith: "_" })); // strips MongoDB operators ($, .) from all inputs
 app.use(hpp());                                // prevents HTTP parameter pollution via duplicate keys
 
+// Inject io so controllers can emit socket events
+app.use((req, _res, next) => { req.io = io; next(); });
+
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
@@ -128,9 +132,10 @@ app.post("/send-sms", verifyStreamWebhook, (req, res) => {
   return res.status(200).send("Not a new message request");
 });
 
-app.use("/auth", authRoutes);
-app.use("/api",  userRoutes);
-app.use("/quiz", quizRoutes);
+app.use("/auth",          authRoutes);
+app.use("/api",           userRoutes);
+app.use("/quiz",          quizRoutes);
+app.use("/notifications", notificationRoutes);
 
 const rooms = new Map();
 const users = new Map();
@@ -202,6 +207,17 @@ io.on("connection", (socket) => {
   socket.on("leave-channel-notifications", ({ channelId }) => {
     socket.leave(`notif:${channelId}`);
   });
+
+  // ── Quiz notifications ────────────────────────────────────────────────────────
+  // Clients join these rooms (one per channel) to receive quiz events.
+  socket.on("join-quiz-channel", ({ channelId }) => {
+    socket.join(`quiz-channel:${channelId}`);
+  });
+
+  socket.on("leave-quiz-channel", ({ channelId }) => {
+    socket.leave(`quiz-channel:${channelId}`);
+  });
+  // ─────────────────────────────────────────────────────────────────────────────
 
   // Caller emits this before joining the WebRTC room so others are alerted.
   socket.on("call-started", ({ channelId, callerId, callerName }) => {

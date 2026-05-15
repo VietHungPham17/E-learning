@@ -3,6 +3,7 @@ import { ChannelList, useChatContext } from "stream-chat-react";
 import Cookies from "universal-cookie";
 
 import { ChannelSearch, TeamChannelList, TeamChannelPreview } from "./";
+import NotificationBell from "./NotificationBell";
 import LogoutIcon from "../assets/logout.png";
 import QuzzIcon from "../assets/quizz.jpg";
 import { AdminIcon } from "../assets";
@@ -21,6 +22,9 @@ const SideBar = ({
   isProfileMode,
   openQuizPanel,
   isQuizMode,
+  notifications,
+  onMarkAllRead,
+  onMarkOneRead,
 }) => (
   <div
     className="channel-list__sidebar"
@@ -39,6 +43,16 @@ const SideBar = ({
     <div className="channel-list__sidebar__icon2">
       <div className="icon1__inner" onClick={logout}>
         <img src={LogoutIcon} alt="Logout" width="30" />
+      </div>
+    </div>
+
+    <div className="channel-list__sidebar__icon2">
+      <div className="icon1__inner" style={{ position: "relative" }}>
+        <NotificationBell
+          notifications={notifications || []}
+          onMarkAllRead={onMarkAllRead}
+          onMarkOneRead={onMarkOneRead}
+        />
       </div>
     </div>
 
@@ -211,6 +225,9 @@ const ChannelListContent = ({
   setActiveProfileTab,
   openQuizPanel,
   isQuizMode,
+  notifications,
+  onMarkAllRead,
+  onMarkOneRead,
 }) => {
   const { client } = useChatContext();
 
@@ -254,6 +271,9 @@ const ChannelListContent = ({
         isProfileMode={isProfileMode}
         openQuizPanel={openQuizPanel}
         isQuizMode={isQuizMode}
+        notifications={notifications}
+        onMarkAllRead={onMarkAllRead}
+        onMarkOneRead={onMarkOneRead}
       />
       {/* Khi collapsed: chỉ hiển thị sidebar icons, giữ layout ổn định */}
       {!isCollapsed && (
@@ -371,6 +391,9 @@ const ChannelListContainer = ({
   setIsQuizMode,
   isCollapsed,
   setIsCollapsed,
+  notifications,
+  onMarkAllRead,
+  onMarkOneRead,
 }) => {
   const [toggleContainer, setToggleContainer] = useState(false);
   // Admin mode state
@@ -434,8 +457,9 @@ const ChannelListContainer = ({
           setActiveProfileTab={setActiveProfileTab}
           openQuizPanel={openQuizPanel}
           isQuizMode={isQuizMode}
-          // theme={theme}
-          // toggleTheme={toggleTheme}
+          notifications={notifications}
+          onMarkAllRead={onMarkAllRead}
+          onMarkOneRead={onMarkOneRead}
         />
       </div>
 
@@ -471,6 +495,9 @@ const ChannelListContainer = ({
           setActiveProfileTab={setActiveProfileTab}
           openQuizPanel={openQuizPanel}
           isQuizMode={isQuizMode}
+          notifications={notifications}
+          onMarkAllRead={onMarkAllRead}
+          onMarkOneRead={onMarkOneRead}
         />
       </div>
     </>
