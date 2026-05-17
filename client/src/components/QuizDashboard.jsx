@@ -1,8 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import "./QuizDashboard.css";
 import QuizMaker from "./QuizMaker";
+
+// ── UI Context ────────────────────────────────────────────────────────────────
+const UIContext = React.createContext({ showToast: () => {}, showConfirm: () => Promise.resolve(false) });
+
+function Toast({ msg, type, id, onClose }) {
+  useEffect(() => {
+    const t = setTimeout(onClose, 3000);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+  return (
+    <div className={`ui-toast ui-toast--${type}`}>
+      <span>{msg}</span>
+      <button className="ui-toast__close" onClick={onClose}>×</button>
+    </div>
+  );
+}
+
+function ConfirmModal({ msg, resolve, onClose }) {
+  const yes = () => { resolve(true);  onClose(); };
+  const no  = () => { resolve(false); onClose(); };
+  return (
+    <div className="ui-confirm-overlay">
+      <div className="ui-confirm-box">
+        <p className="ui-confirm-title">Hệ thống thông báo</p>
+        <p className="ui-confirm-msg">{msg}</p>
+        <div className="ui-confirm-btns">
+          <button className="ui-confirm-btn ui-confirm-btn--ok"  onClick={yes}>Xác nhận</button>
+          <button className="ui-confirm-btn ui-confirm-btn--no"  onClick={no}>Hủy</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const cookies = new Cookies();
 const API_URL = "http://localhost:6036";
@@ -14,6 +48,16 @@ const QuizDashboard = ({ userRole, isCollapsed }) => {
   const [error, setError] = useState("");
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [viewMode, setViewMode] = useState("list");
+
+  // UI helpers
+  const [toastState, setToastState] = useState(null);
+  const [confirmState, setConfirmState] = useState(null);
+  const showToast = useCallback((msg, type = "success") => {
+    setToastState({ msg, type, id: Date.now() });
+  }, []);
+  const showConfirm = useCallback((msg) => new Promise((resolve) => {
+    setConfirmState({ msg, resolve });
+  }), []);
 
   const [quizForm, setQuizForm] = useState({
     quizId: "",
@@ -85,7 +129,7 @@ const QuizDashboard = ({ userRole, isCollapsed }) => {
         headers: getAuthHeaders(),
       });
 
-      alert("Quiz created successfully!");
+      showToast("Tạo quiz thành công!");
       setQuizForm({ quizId: "", title: "", timeLimit: 0 });
       setViewMode("list");
       fetchQuizzes();
@@ -95,14 +139,14 @@ const QuizDashboard = ({ userRole, isCollapsed }) => {
   };
 
   const handleDeleteQuiz = async (quizId) => {
-    if (!window.confirm("Are you sure you want to delete this quiz?")) return;
+    if (!(await showConfirm("Bạn chắc chắn muốn xóa quiz này?"))) return;
 
     try {
       await axios.delete(`${API_URL}/quiz/${quizId}`, {
         headers: getAuthHeaders(),
       });
 
-      alert("Quiz deleted successfully!");
+      showToast("Đã xóa quiz thành công!");
       fetchQuizzes();
     } catch (err) {
       setError(err.response?.data?.message || "Error deleting quiz");
@@ -116,7 +160,7 @@ const QuizDashboard = ({ userRole, isCollapsed }) => {
         headers: getAuthHeaders(),
       });
 
-      alert(`Quiz ${action}ed successfully!`);
+      showToast(action === "start" ? "Đã bắt đầu quiz!" : "Đã dừng quiz!");
       fetchQuizzes();
     } catch (err) {
       setError(
@@ -324,13 +368,7 @@ const QuizDashboard = ({ userRole, isCollapsed }) => {
   const handleGenerateQuiz = async (config) => {
     try {
       console.log("Generating quiz with config:", config);
-      alert(
-        `Generating quiz with ${
-          config.questionCount
-        } questions on topics: ${config.topics.join(", ")} at ${
-          config.difficulty
-        } difficulty`,
-      );
+      showToast(`Đang tạo quiz ${config.questionCount} câu về: ${config.topics.join(", ")} (${config.difficulty})`);
       setViewMode("list");
     } catch (error) {
       console.error("Error generating quiz:", error);
@@ -339,6 +377,7 @@ const QuizDashboard = ({ userRole, isCollapsed }) => {
   };
 
   return (
+    <UIContext.Provider value={{ showToast, showConfirm }}>
     <div className={`quiz-dashboard ${isCollapsed ? "collapsed" : ""}`}>
       {viewMode === "list" && userRole !== "student" && renderQuizManagement()}
       {viewMode === "list" &&
@@ -392,11 +431,22 @@ const QuizDashboard = ({ userRole, isCollapsed }) => {
           getAuthHeaders={getAuthHeaders}
         />
       )}
+      {toastState && (
+        <Toast {...toastState} onClose={() => setToastState(null)} />
+      )}
+      {confirmState && (
+        <ConfirmModal
+          {...confirmState}
+          onClose={() => setConfirmState(null)}
+        />
+      )}
     </div>
+    </UIContext.Provider>
   );
 };
 
 function QuizEditor({ quiz, onBack, getAuthHeaders }) {
+  const { showToast, showConfirm } = useContext(UIContext);
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -449,12 +499,12 @@ function QuizEditor({ quiz, onBack, getAuthHeaders }) {
 
     const correctCount = questionForm.answers.filter((a) => a.correct).length;
     if (correctCount !== 1) {
-      alert("Exactly one answer must be correct!");
+      showToast("Phải chọn đúng một đáp án đúng!", "error");
       return;
     }
 
     if (questionForm.answers.some((a) => !a.text.trim())) {
-      alert("All answers must have text!");
+      showToast("Tất cả các đáp án phải có nội dung!", "error");
       return;
     }
 
@@ -465,14 +515,14 @@ function QuizEditor({ quiz, onBack, getAuthHeaders }) {
           questionForm,
           { headers: getAuthHeaders() },
         );
-        alert("Question updated!");
+        showToast("Đã cập nhật câu hỏi!");
       } else {
         await axios.post(
           `${API_URL}/quiz/${quiz.quizId}/questions`,
           questionForm,
           { headers: getAuthHeaders() },
         );
-        alert("Question added!");
+        showToast("Đã thêm câu hỏi!");
       }
 
       resetForm();
@@ -483,14 +533,14 @@ function QuizEditor({ quiz, onBack, getAuthHeaders }) {
   };
 
   const handleDeleteQuestion = async (questionId) => {
-    if (!window.confirm("Delete this question?")) return;
+    if (!(await showConfirm("Xóa câu hỏi này?"))) return;
 
     try {
       await axios.delete(
         `${API_URL}/quiz/${quiz.quizId}/questions/${questionId}`,
         { headers: getAuthHeaders() },
       );
-      alert("Question deleted!");
+      showToast("Đã xóa câu hỏi!");
       fetchQuestions();
     } catch (err) {
       setError(err.response?.data?.message || "Error deleting question");
@@ -625,6 +675,7 @@ function QuizEditor({ quiz, onBack, getAuthHeaders }) {
 }
 
 const QuizTaker = ({ quiz, onBack, getAuthHeaders }) => {
+  const { showConfirm } = useContext(UIContext);
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -675,7 +726,7 @@ const QuizTaker = ({ quiz, onBack, getAuthHeaders }) => {
 
   const handleSubmit = async (autoSubmit = false) => {
     if (!autoSubmit && answers.some((a) => a === -1)) {
-      if (!window.confirm("You haven't answered all questions. Submit anyway?"))
+      if (!(await showConfirm("Bạn chưa trả lời hết câu hỏi. Vẫn nộp bài?")))
         return;
     }
 
@@ -789,6 +840,7 @@ const QuizTaker = ({ quiz, onBack, getAuthHeaders }) => {
 };
 
 const QuizResults = ({ quiz, onBack, getAuthHeaders }) => {
+  const { showToast, showConfirm } = useContext(UIContext);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -813,13 +865,13 @@ const QuizResults = ({ quiz, onBack, getAuthHeaders }) => {
   };
 
   const handleClearLeaderboard = async () => {
-    if (!window.confirm("Clear all results for this quiz?")) return;
+    if (!(await showConfirm("Xóa toàn bộ kết quả của quiz này?"))) return;
 
     try {
       await axios.delete(`${API_URL}/quiz/${quiz.quizId}/leaderboard`, {
         headers: getAuthHeaders(),
       });
-      alert("Leaderboard cleared!");
+      showToast("Đã xóa bảng xếp hạng!");
       fetchResults();
     } catch (err) {
       setError(err.response?.data?.message || "Error clearing leaderboard");

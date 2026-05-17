@@ -760,3 +760,92 @@
     padding: 8px 10px;
   }
 }
+
+/* ── Toast ──────────────────────────────────────────────────────────── */
+.ui-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  z-index: 10000;
+  animation: toast-in 0.2s ease;
+  max-width: 420px;
+  text-align: center;
+}
+.ui-toast--success { background: #16a34a; }
+.ui-toast--error   { background: #dc2626; }
+.ui-toast__close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.8;
+  padding: 0;
+}
+.ui-toast__close:hover { opacity: 1; }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Confirm Modal ──────────────────────────────────────────────────── */
+.ui-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+}
+.ui-confirm-box {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px 32px;
+  width: 360px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+  text-align: center;
+}
+.ui-confirm-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #005fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px;
+}
+.ui-confirm-msg {
+  font-size: 15px;
+  color: #1a1a2e;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+.ui-confirm-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.ui-confirm-btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s;
+}
+.ui-confirm-btn:hover { opacity: 0.85; }
+.ui-confirm-btn--ok { background: #005fff; color: #fff; }
+.ui-confirm-btn--no { background: #f1f5f9; color: #64748b; }
