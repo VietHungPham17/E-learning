@@ -63,11 +63,15 @@ const signRefreshToken = (userId, jwtVersion) =>
   jwt.sign({ userId, jwtVersion }, JWT_REFRESH_SECRET, { expiresIn: "7d", algorithm: "HS256" });
 
 // Set refreshToken as httpOnly cookie (JS cannot read it)
+// SameSite: "none" in production because client and server are on different
+// Render subdomains (cross-origin). Requires Secure:true (already set).
+// SameSite: "lax" in development (localhost is same-site across ports).
 function setRefreshCookie(res, token) {
+  const isProd = process.env.NODE_ENV === "production";
   res.cookie("refreshToken", token, {
     httpOnly: true,
-    secure:   process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure:   isProd,
+    sameSite: isProd ? "none" : "lax",
     maxAge:   7 * 24 * 60 * 60 * 1000,
     path:     "/",
   });
@@ -501,10 +505,11 @@ const logout = async (req, res) => {
       { streamUserId: req.user.id },
       { $inc: { jwtVersion: 1 } }
     );
+    const isProd = process.env.NODE_ENV === "production";
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure:   process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure:   isProd,
+      sameSite: isProd ? "none" : "lax",
       path:     "/",
     });
     return res.status(200).json({ message: "Đăng xuất thành công" });
