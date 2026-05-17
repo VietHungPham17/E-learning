@@ -118,7 +118,7 @@ const SideBar = ({
 
 const CompanyHeader = () => (
   <div className="channel-list__header">
-    <p className="channel-list__header__text">Chat Pager</p>
+    <p className="channel-list__header__text">E-learning</p>
   </div>
 );
 
